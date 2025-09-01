@@ -1,14 +1,18 @@
 package com.youngineer.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "\"user\"")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private String id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -18,6 +22,11 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Url> urlList = new ArrayList<>();
+
 
     public String getName() {
         return name;
@@ -31,12 +40,24 @@ public class User {
         return emailId;
     }
 
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Url> getUrlList() {
+        return urlList;
+    }
+
+    public void setUrlList(List<Url> urlList) {
+        this.urlList = urlList;
     }
 
     @Override
