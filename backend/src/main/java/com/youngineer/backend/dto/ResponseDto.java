@@ -1,4 +1,4 @@
 package com.youngineer.backend.dto;
 
-public record ResponseDto() {
+public record ResponseDto(String message, Object content) {
 }
