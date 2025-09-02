@@ -1,13 +1,19 @@
 package com.youngineer.backend.services.implementations;
 
 import com.sun.jdi.request.DuplicateRequestException;
+import com.youngineer.backend.dto.ResponseDto;
 import com.youngineer.backend.dto.authDto.LoginRequest;
 import com.youngineer.backend.dto.authDto.SignupRequest;
 import com.youngineer.backend.models.User;
 import com.youngineer.backend.repository.UserRepository;
 import com.youngineer.backend.services.AuthService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
 
+
+@Service
+@Transactional
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
@@ -16,9 +22,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String signupService(SignupRequest signupRequest) {
+    public ResponseDto signupService(SignupRequest signupRequest) {
         if (signupRequest == null) {
-            return "Invalid user data";
+            return new ResponseDto("Invalid user data", null);
         }
 
         String emailId = signupRequest.getEmailId();
@@ -30,17 +36,17 @@ public class AuthServiceImpl implements AuthService {
             } else {
                 User user = convertToUserEntity(signupRequest);
                 userRepository.save(user);
-                return "Signup Successful! Please login";
+                return new ResponseDto("OK", null);
             }
 
         } catch (Exception e) {
-            return e.getMessage();
+            return new ResponseDto(e.getMessage(), null);
         }
     }
 
     @Override
-    public String LoginService(LoginRequest loginRequest) {
-        return "";
+    public ResponseDto LoginService(LoginRequest loginRequest) {
+        return new ResponseDto("", null);
     }
 
     private User convertToUserEntity(SignupRequest signupRequest) {
