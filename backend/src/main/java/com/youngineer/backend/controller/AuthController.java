@@ -7,15 +7,19 @@ import com.youngineer.backend.services.AuthService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "${frontend.url}")
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthenticationManager authenticationManager, AuthService authService) {
+        this.authenticationManager = authenticationManager;
         this.authService = authService;
     }
     @PostMapping("/signup")

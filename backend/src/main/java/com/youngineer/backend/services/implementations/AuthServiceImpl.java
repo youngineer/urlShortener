@@ -8,6 +8,9 @@ import com.youngineer.backend.models.User;
 import com.youngineer.backend.repository.UserRepository;
 import com.youngineer.backend.services.AuthService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +19,11 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthServiceImpl(UserRepository userRepository) {
+    public AuthServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -36,17 +41,24 @@ public class AuthServiceImpl implements AuthService {
             } else {
                 User user = convertToUserEntity(signupRequest);
                 userRepository.save(user);
-                return new ResponseDto("OK", null);
+                return new ResponseDto("OK", "Signup successful! Please login");
             }
 
         } catch (Exception e) {
-            return new ResponseDto(e.getMessage(), null);
+            return new ResponseDto(e.getMessage(), e.getMessage());
         }
     }
 
     @Override
     public ResponseDto LoginService(LoginRequest loginRequest) {
-        return new ResponseDto("", null);
+        String emailId = loginRequest.getEmailId();
+        String password = loginRequest.getPassword();
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(emailId, password));
+
+
+        }
     }
 
     private User convertToUserEntity(SignupRequest signupRequest) {
