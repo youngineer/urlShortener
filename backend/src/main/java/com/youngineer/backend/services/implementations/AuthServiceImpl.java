@@ -7,12 +7,18 @@ import com.youngineer.backend.dto.authDto.SignupRequest;
 import com.youngineer.backend.models.User;
 import com.youngineer.backend.repository.UserRepository;
 import com.youngineer.backend.services.AuthService;
+import com.youngineer.backend.utils.JwtHelper;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 
 
 @Service
@@ -46,18 +52,6 @@ public class AuthServiceImpl implements AuthService {
 
         } catch (Exception e) {
             return new ResponseDto(e.getMessage(), e.getMessage());
-        }
-    }
-
-    @Override
-    public ResponseDto LoginService(LoginRequest loginRequest) {
-        String emailId = loginRequest.getEmailId();
-        String password = loginRequest.getPassword();
-
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(emailId, password));
-
-
         }
     }
 

@@ -1,6 +1,7 @@
 package com.youngineer.backend.authentication;
 
 import com.youngineer.backend.services.implementations.UserDetailsServiceImpl;
+import com.youngineer.backend.utils.JwtHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

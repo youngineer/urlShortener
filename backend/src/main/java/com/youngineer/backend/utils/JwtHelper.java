@@ -1,4 +1,4 @@
-package com.youngineer.backend.authentication;
+package com.youngineer.backend.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,7 +15,7 @@ import java.util.Date;
 
 public class JwtHelper {
     private static final Integer EXPIRATION_MINUTES = 60;
-    private static final String SECRET_KEY_STRING = System.getenv("JWT_SECRET");
+    private static final String SECRET_KEY_STRING = System.getenv("JWT_SECRET_KEY");
     private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8));
 
     public static String generateToken(String emailId) {
