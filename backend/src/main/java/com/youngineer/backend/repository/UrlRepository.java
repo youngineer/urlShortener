@@ -2,9 +2,7 @@ package com.youngineer.backend.repository;
 
 import com.youngineer.backend.models.Url;
 import com.youngineer.backend.models.User;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +16,7 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByCustomUrl(String customUrl);
     Optional<Url> findByShortUrl(String shortUrl);
     Optional<Url> findByLongUrlAndUser(String longUrl, User user);
-    Optional<Url>
     boolean existsByCustomUrl(String customUrl);
     boolean existsByShortUrl(String shortUrl);
+    void deleteById(Long id);
 }

@@ -1,8 +1,10 @@
 package com.youngineer.backend.services.implementations;
 
 import com.youngineer.backend.dto.ResponseDto;
-import com.youngineer.backend.dto.urlDto.UrlDto;
+import com.youngineer.backend.dto.urlDto.UrlDeleteRequest;
+import com.youngineer.backend.dto.urlDto.UrlResponseDto;
 import com.youngineer.backend.dto.urlDto.UrlShortenRequest;
+import com.youngineer.backend.dto.urlDto.UrlUpdateRequest;
 import com.youngineer.backend.models.Url;
 import com.youngineer.backend.models.User;
 import com.youngineer.backend.repository.UrlRepository;
@@ -37,13 +39,13 @@ public class UrlServiceImpl implements UrlService {
             List<Url> urlList = urlRepository.findAllByUserOrderByCreatedAtDesc(user);
             if(urlList.isEmpty()) return new ResponseDto("OK", "Create an url");
 
-            List<UrlDto> urlDtoList = new ArrayList<>();
+            List<UrlResponseDto> urlResponseDtoList = new ArrayList<>();
             for(Url url: urlList) {
-                UrlDto urlDto = new UrlDto(url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl());
-                urlDtoList.add(urlDto);
+                UrlResponseDto urlResponseDto = new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl());
+                urlResponseDtoList.add(urlResponseDto);
             }
 
-            return new ResponseDto("OK", urlDtoList);
+            return new ResponseDto("OK", urlResponseDtoList);
         } catch (Exception e) {
             return new ResponseDto(e.getMessage(), null);
         }
@@ -61,11 +63,11 @@ public class UrlServiceImpl implements UrlService {
             Optional<Url> optionalUrl = urlRepository.findByLongUrlAndUser(longUrl, user);
             if(optionalUrl.isPresent()) {
                 Url url = optionalUrl.get();
-                return new ResponseDto("OK", new UrlDto(url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
+                return new ResponseDto("OK", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
             } else {
                 Url url = convertToUrlEntity(name, user, longUrl, shortUrl, customUrl);
                 url = urlRepository.save(url);
-                return new ResponseDto("OK", new UrlDto(url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
+                return new ResponseDto("OK", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
             }
         } catch (Exception e) {
             return new ResponseDto(e.getMessage(), null);
@@ -73,19 +75,42 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public ResponseDto updateUrl(UrlShortenRequest urlShortenRequest, HttpServletRequest request) {
+    public ResponseDto updateUrl(UrlUpdateRequest urlUpdateRequest, HttpServletRequest request) {
         try {
             User user = getUser(request);
-            String longUrl = urlShortenRequest.longUrl();
-            String name = urlShortenRequest.name().isEmpty() ? longUrl : urlShortenRequest.name();
-            String shortUrl = SHORT_BASE_URL + getCrc32(longUrl);
-            String customUrl = urlShortenRequest.customUrl().isEmpty() ? shortUrl : urlShortenRequest.customUrl();
+            Optional<Url> optionalPrevStoredUrl = urlRepository.findById(urlUpdateRequest.id());
+            if(optionalPrevStoredUrl.isEmpty()) throw new EntityNotFoundException("No such url created");
 
+            Url prevStoredUrl = optionalPrevStoredUrl.get();
+            String shortUrl = prevStoredUrl.getShortUrl();
+            String longUrl = urlUpdateRequest.longUrl().isEmpty() ? prevStoredUrl.getLongUrl() : urlUpdateRequest.longUrl();
+            String name = urlUpdateRequest.name().isEmpty() ? prevStoredUrl.getName() : urlUpdateRequest.name();
+            String customUrl = urlUpdateRequest.customUrl().isEmpty() ? prevStoredUrl.getCustomUrl() : urlUpdateRequest.customUrl();
+
+            Url updatedUrl = convertToUrlEntity(name, user, longUrl, shortUrl, customUrl);
+            updatedUrl.setId(prevStoredUrl.getId());
+            urlRepository.save(updatedUrl);
+
+            return getUserUrlList(request);
 
         } catch (Exception e) {
             return new ResponseDto(e.getMessage(), null);
         }
     }
+
+    @Override
+    public ResponseDto deleteUrl(UrlDeleteRequest urlDeleteRequest, HttpServletRequest request) {
+        System.out.println(urlDeleteRequest.id());
+        try {
+            User user = getUser(request);
+            urlRepository.deleteById(urlDeleteRequest.id());
+
+            return getUserUrlList(request);
+        } catch (Exception e) {
+            return new ResponseDto(e.getMessage(), null);
+        }
+    }
+
 
     private Url convertToUrlEntity(String name, User user, String longUrl, String shortUrl, String customUrl) {
         Url url = new Url();

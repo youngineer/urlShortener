@@ -1,7 +1,9 @@
 package com.youngineer.backend.controller;
 
 import com.youngineer.backend.dto.ResponseDto;
+import com.youngineer.backend.dto.urlDto.UrlDeleteRequest;
 import com.youngineer.backend.dto.urlDto.UrlShortenRequest;
+import com.youngineer.backend.dto.urlDto.UrlUpdateRequest;
 import com.youngineer.backend.services.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,9 +41,18 @@ public class UrlController {
     }
 
     @PatchMapping("/updateUrl")
-    public ResponseEntity<ResponseDto> updateUrl(@RequestBody UrlShortenRequest urlShortenRequest, HttpServletRequest request) {
+    public ResponseEntity<ResponseDto> updateUrl(@RequestBody UrlUpdateRequest urlUpdateRequest, HttpServletRequest request) {
         try {
-            return ResponseEntity.ok(urlService.updateUrl(urlShortenRequest, request));
+            return ResponseEntity.ok(urlService.updateUrl(urlUpdateRequest, request));
+        } catch (Exception e) {
+            return (ResponseEntity<ResponseDto>) ResponseEntity.status(500);
+        }
+    }
+
+    @DeleteMapping("/deleteUrl")
+    public ResponseEntity<ResponseDto> deleteUrl(@RequestBody UrlDeleteRequest urlDeleteRequest, HttpServletRequest request) {
+        try {
+            return ResponseEntity.ok(urlService.deleteUrl(urlDeleteRequest, request));
         } catch (Exception e) {
             return (ResponseEntity<ResponseDto>) ResponseEntity.status(500);
         }
