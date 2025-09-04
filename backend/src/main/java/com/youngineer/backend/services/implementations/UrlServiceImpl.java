@@ -66,8 +66,8 @@ public class UrlServiceImpl implements UrlService {
                 return new ResponseDto("OK", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
             } else {
                 Url url = convertToUrlEntity(name, user, longUrl, shortUrl, customUrl);
-                url = urlRepository.save(url);
-                return new ResponseDto("OK", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
+                urlRepository.save(url);
+                return new ResponseDto("OK", getUserUrlList(request));
             }
         } catch (Exception e) {
             return new ResponseDto(e.getMessage(), null);

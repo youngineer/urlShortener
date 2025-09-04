@@ -83,4 +83,17 @@ public class AuthController {
                     .body(new ResponseDto("An unexpected error occurred: " + e.getMessage(), null));
         }
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity<ResponseDto> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(Duration.ofSeconds(0))
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(new ResponseDto("OK", "Logout successful!"));
+    }
 }
