@@ -36,7 +36,6 @@ public class AuthController {
     }
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto> signup(@Validated @RequestBody SignupRequest signupRequest) {
-        System.out.println("Entered controller");
         try {
             ResponseDto serviceResponse = authService.signupService(signupRequest);
             if(serviceResponse.message().equals("OK")) return ResponseEntity.status(HttpStatus.CREATED).body(serviceResponse);
@@ -77,7 +76,8 @@ public class AuthController {
         } catch (BadCredentialsException | UsernameNotFoundException e) {
             return ResponseEntity.badRequest().body(new ResponseDto("Invalid credentials", null));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDto("Authentication failed", null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ResponseDto("Authentication failed", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto("An unexpected error occurred: " + e.getMessage(), null));

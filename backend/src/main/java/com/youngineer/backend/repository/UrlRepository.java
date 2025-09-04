@@ -6,12 +6,19 @@ import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
-    Optional<List<Url>> findAllByUser(User user, Sort sort, Limit limit);
-    Optional<Url> findUrlByCustomUrl(String customUrl);
-    Optional<Url> findUrlByShortUrl(String shortUrl);
+    List<Url> findAllByUserOrderByCreatedAtDesc(User user);
+    List<Url> findAllByUser(User user, Pageable pageable);
+    Optional<Url> findByCustomUrl(String customUrl);
+    Optional<Url> findByShortUrl(String shortUrl);
+    Optional<Url> findByLongUrlAndUser(String longUrl, User user);
+    Optional<Url>
+    boolean existsByCustomUrl(String customUrl);
+    boolean existsByShortUrl(String shortUrl);
 }
