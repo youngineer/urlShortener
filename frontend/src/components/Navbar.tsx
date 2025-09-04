@@ -1,11 +1,11 @@
-import type { FC, JSX } from "react"
+import React from 'react'
 
-const Navbar: FC = (): JSX.Element => {
+const Navbar = () => {
   return (
     <div>
         <div className="navbar bg-base-100 shadow-sm">
             <div className="flex-1">
-                <a className="btn btn-ghost text-xl">kṣiptaLink</a>
+                <a className="btn btn-ghost text-xl">linkShrink</a>
             </div>
             <div className="flex-none">
                 <button className="btn btn-square btn-ghost">
@@ -17,4 +17,4 @@ const Navbar: FC = (): JSX.Element => {
   )
 }
 
-export default Navbar;
+export default Navbar
