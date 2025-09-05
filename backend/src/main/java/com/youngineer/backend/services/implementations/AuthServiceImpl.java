@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseDto signupService(SignupRequest signupRequest) {
+    public ResponseDto signupService(LoginRequest signupRequest) {
         if (signupRequest == null) {
             return new ResponseDto("Invalid user data", null);
         }
@@ -55,14 +55,12 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private User convertToUserEntity(SignupRequest signupRequest) {
+    private User convertToUserEntity(LoginRequest signupRequest) {
         String emailId = signupRequest.getEmailId();
         String password = signupRequest.getPassword();
-        String name = signupRequest.getName();
         String passwordHash = encodePassword(password);
 
         User user = new User();
-        user.setName(name);
         user.setPassword(passwordHash);
         user.setEmailId(emailId);
 

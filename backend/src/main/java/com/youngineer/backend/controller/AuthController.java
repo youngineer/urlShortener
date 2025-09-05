@@ -35,7 +35,7 @@ public class AuthController {
         this.authService = authService;
     }
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto> signup(@Validated @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<ResponseDto> signup(@Validated @RequestBody LoginRequest signupRequest) {
         try {
             ResponseDto serviceResponse = authService.signupService(signupRequest);
             if(serviceResponse.message().equals("OK")) return ResponseEntity.status(HttpStatus.CREATED).body(serviceResponse);
@@ -48,7 +48,7 @@ public class AuthController {
                     .body(new ResponseDto(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto("An unexpected error occurred: " + e.getMessage(), null));
+                    .body(new ResponseDto(e.getMessage(), null));
         }
     }
 
@@ -68,7 +68,7 @@ public class AuthController {
                         .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                ResponseDto responseDto = new ResponseDto("OK", "Login successful!");
+                ResponseDto responseDto = new ResponseDto("Login successful!", "Login successful!");
                 return ResponseEntity.ok(responseDto);
             } else {
                 throw new BadCredentialsException("Error authenticating the user");
@@ -94,6 +94,6 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok(new ResponseDto("OK", "Logout successful!"));
+        return ResponseEntity.ok(new ResponseDto("Logout successful!", "Logout successful!"));
     }
 }

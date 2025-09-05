@@ -15,9 +15,6 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
-
     @Column(name = "email_id", unique = true, nullable = false)
     private String emailId;
 
@@ -43,14 +40,6 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmailId() {
