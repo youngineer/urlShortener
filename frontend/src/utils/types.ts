@@ -4,6 +4,10 @@ export interface ILogin {
 }
 
 export interface ISignup extends ILogin{
-    name: string;
     confirmPassword: string;
+}
+
+export interface IBackendResponseDto {
+    message: string;
+    content: object
 }

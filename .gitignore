@@ -1,4 +1,5 @@
 /backend/.env
+/frontend/.env
 frontend/logs
 frontend/*.log
 frontend/npm-debug.log*
