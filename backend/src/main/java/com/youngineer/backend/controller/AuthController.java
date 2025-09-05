@@ -6,6 +6,8 @@ import com.youngineer.backend.dto.authDto.LoginRequest;
 import com.youngineer.backend.dto.authDto.SignupRequest;
 import com.youngineer.backend.services.AuthService;
 import com.youngineer.backend.utils.JwtHelper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -95,5 +97,29 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(new ResponseDto("Logout successful!", "Logout successful!"));
+    }
+
+    @GetMapping("/isLoggedIn")
+    public ResponseEntity<Boolean> isLoggedIn(HttpServletRequest request) {
+        String token = null;
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        System.out.println(token);
+
+        if (token != null) {
+            String emailId = JwtHelper.extractEmailId(token);
+            if(JwtHelper.validateToken(token, emailId))
+                return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(false);
     }
 }
