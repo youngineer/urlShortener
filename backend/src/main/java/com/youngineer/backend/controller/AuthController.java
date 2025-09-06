@@ -112,7 +112,6 @@ public class AuthController {
                 }
             }
         }
-        System.out.println(token);
 
         if (token != null) {
             String emailId = JwtHelper.extractEmailId(token);
