@@ -7,7 +7,7 @@ const Body: FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1 justify-center py-6">
+      <main className="flex-1 flex justify-center py-18">
         <Outlet />
       </main>
       <Footer />

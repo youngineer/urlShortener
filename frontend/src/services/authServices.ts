@@ -74,3 +74,22 @@ export async function handleLogout(): Promise<string> {
         return Promise.reject(error);
     }
 }
+
+
+export async function isLoggedIn() {
+    const url: string = BASE_URL + "/isLoggedIn";
+    const request: Request = new Request(url, {
+        headers: HEADER,
+        method: "GET",
+        credentials: 'include'
+    });
+
+    try {
+        const response = await fetch(request);
+        if(!response.ok) return false;
+
+        return await response.json();
+    } catch (error) {
+        return false;
+    }
+}

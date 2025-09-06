@@ -1,8 +1,12 @@
 import { useState, type ChangeEvent, type FC, type JSX, type FormEvent } from 'react'
+import AlertDialog from './AlertDialog'
+import type { IAlertInfo } from '../utils/types'
 import type { ILogin, ISignup } from '../utils/types';
 import { handleLogin, handleSignup } from '../services/authServices';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage: FC = (): JSX.Element => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [signupPayload, setSignupInfo] = useState<ISignup>({
     emailId: 'test@gmail.com',
@@ -14,7 +18,7 @@ const AuthPage: FC = (): JSX.Element => {
     password: 'Test@123'
   });
 
-  const [message, setMessage] = useState<string | null>(null);
+  const [alert, setAlert] = useState<IAlertInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
 
@@ -37,14 +41,15 @@ const AuthPage: FC = (): JSX.Element => {
   const handleFormSubmit = async(e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    setAlert(null);
     try {
       const response = await (isLogin ? handleLogin(loginPayload) : handleSignup(signupPayload));
       console.log(response);
-      setMessage(String(response));
+      setAlert({ isError: false, message: String(response) });
+      navigate("/url/");
     } catch (error: any) {
       console.error(error);
-      setMessage(String(error ?? 'An error occurred'));
+      setAlert({ isError: true, message: String(error ?? 'An error occurred') });
     } finally {
       setLoading(false);
     }
@@ -52,11 +57,14 @@ const AuthPage: FC = (): JSX.Element => {
 
 
   return (
+    <div>
+      {alert && <AlertDialog {...alert} />}
   <form onSubmit={handleFormSubmit}>
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-        <legend className="fieldset-legend">{isLogin? "Login": "Signup"}</legend>
+        <legend className="fieldset-legend text-xl">{isLogin? "Login": "Signup"}</legend>
 
-        <label className="input validator mt-4">
+        <legend className="fieldset-legend">Email</legend>
+        <label className="input validator">
           <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g
               strokeLinejoin="round"
@@ -73,7 +81,8 @@ const AuthPage: FC = (): JSX.Element => {
         </label>
         <div className="validator-hint hidden">Enter valid email address</div>
 
-      <label className="input validator mt-4">
+      <legend className="fieldset-legend">Password</legend>
+      <label className="input validator">
         <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <g
             strokeLinejoin="round"
@@ -108,7 +117,8 @@ const AuthPage: FC = (): JSX.Element => {
         {
           !isLogin && (
             <div>
-              <label className="input validator mt-4">
+              <legend className="fieldset-legend">Confirm Password</legend>
+              <label className="input validator">
               <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g
                   strokeLinejoin="round"
@@ -148,9 +158,10 @@ const AuthPage: FC = (): JSX.Element => {
   <button type="submit" className="btn btn-neutral mt-4">{isLogin? "Login": "Signup"}</button>
 
   {loading && <p className="mt-2">Loading...</p>}
-  {message && <p className="mt-2">{message}</p>}
+  
       </fieldset>
     </form>
+  </div>
   )
 }
 
