@@ -24,3 +24,6 @@ export interface IUrl {
     longUrl: string;
     customUrl: string;
 }
+
+export type IUrlEntry = Omit<IUrl, 'id'>;
+export type IUrlMap = Map<number, IUrlEntry>;

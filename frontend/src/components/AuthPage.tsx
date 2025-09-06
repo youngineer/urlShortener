@@ -44,7 +44,6 @@ const AuthPage: FC = (): JSX.Element => {
     setAlert(null);
     try {
       const response = await (isLogin ? handleLogin(loginPayload) : handleSignup(signupPayload));
-      console.log(response);
       setAlert({ isError: false, message: String(response) });
       navigate("/url/");
     } catch (error: any) {
