@@ -49,7 +49,7 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }): JSX.Element =
         <form onSubmit={handleFormSubmit} className="max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md space-y-6">
             {/* Url Name */}
             <div className="flex flex-col">
-                <label htmlFor="name" className="text-sm font-semibold text-gray-700">Url Name</label>
+                <label htmlFor="name" className="text-sm font-semibold text-gray-700">URL Name</label>
                 <input 
                     type="text" 
                     name="name" 
@@ -75,24 +75,30 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }): JSX.Element =
                     className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                     required 
                     placeholder="Enter Original URL"
-                    pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+)$" 
+                    value={urlUpdateForm.longUrl}
+                    pattern="^(https?:\/\/)?([\w\d\-_]+(\.[\w\d\-_]+)+)(:\d+)?(\/[^\s]*)?(\?[^\s]*)?(#[^\s]*)?$" 
                     title="Must be a valid URL" 
                     onChange={handleInputChange}
+                    disabled={isEdit}
                 />
                 <p className="mt-1 text-xs text-gray-500">Must be a valid URL</p>
             </div>
 
             {/* Short Url */}
-            <div className="flex flex-col">
-                <label htmlFor="shortUrl" className="text-sm font-semibold text-gray-700">Short URL</label>
-                <input 
-                    type="text" 
-                    name="shortUrl" 
-                    className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                    placeholder={urlUpdateForm.shortUrl} 
-                    disabled 
-                />
-            </div>
+            {
+                isEdit && (
+                    <div className="flex flex-col">
+                        <label htmlFor="shortUrl" className="text-sm font-semibold text-gray-700">Short URL</label>
+                        <input 
+                            type="text" 
+                            name="shortUrl" 
+                            className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                            placeholder={urlUpdateForm.shortUrl} 
+                            disabled 
+                        />
+                    </div>
+                )
+            }
 
             {/* Custom Url */}
             <div className="flex flex-col">

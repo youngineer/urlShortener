@@ -9,13 +9,13 @@ const AuthPage: FC = (): JSX.Element => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [signupPayload, setSignupInfo] = useState<ISignup>({
-    emailId: 'test@gmail.com',
-    password: 'Test@123',
-    confirmPassword: 'Test@123'
+    emailId: '',
+    password: '',
+    confirmPassword: ''
   });
   const [loginPayload, setLoginInfo] = useState<ILogin>({
-    emailId: 'test@gmail.com',
-    password: 'Test@123'
+    emailId: '',
+    password: ''
   });
 
   const [alert, setAlert] = useState<IAlertInfo | null>(null);
