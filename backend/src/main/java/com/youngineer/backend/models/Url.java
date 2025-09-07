@@ -37,6 +37,9 @@ public class Url {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "qr_code")
+    private String qrCode;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -110,5 +113,13 @@ public class Url {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 }

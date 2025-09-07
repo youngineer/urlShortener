@@ -1,5 +1,8 @@
 package com.youngineer.backend.services.implementations;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.sun.jdi.request.DuplicateRequestException;
 import com.sun.jdi.request.InvalidRequestStateException;
 import com.youngineer.backend.dto.ResponseDto;
@@ -16,11 +19,12 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.zip.CRC32;
 
 
@@ -44,42 +48,49 @@ public class UrlServiceImpl implements UrlService {
 
             List<UrlResponseDto> urlResponseDtoList = new ArrayList<>();
             for(Url url: urlList) {
-                UrlResponseDto urlResponseDto = new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl());
+                UrlResponseDto urlResponseDto = new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl(), url.getQrCode());
                 urlResponseDtoList.add(urlResponseDto);
             }
 
             return new ResponseDto("Data fetched successfully!", urlResponseDtoList);
         } catch (Exception e) {
-            return new ResponseDto(e.getMessage(), false);
+            return new ResponseDto(e.getMessage(), null);
         }
     }
 
     @Override
-    public ResponseDto shortenUrl(UrlShortenRequest urlShortenRequest, HttpServletRequest request){
-        System.out.println(urlShortenRequest.toString());
+    public ResponseDto shortenUrl(UrlShortenRequest urlShortenRequest, HttpServletRequest request) {
         try {
             User user = getUser(request);
             String longUrl = urlShortenRequest.longUrl();
             String name = urlShortenRequest.name();
             String shortUrl = SHORT_BASE_URL + getCrc32(longUrl);
+
+            int attempt = 0;
             while(urlRepository.existsByShortUrl(shortUrl) || urlRepository.existsByCustomUrl(shortUrl)) {
-                shortUrl += getCrc32(longUrl);
+                attempt++;
+                shortUrl = SHORT_BASE_URL + getCrc32(longUrl) + "_" + attempt;
             }
+
             String customUrl = urlShortenRequest.customUrl();
+            String qrCodeBase64 = generateQRCodeBase64(longUrl);
 
             Optional<Url> optionalUrl = urlRepository.findByLongUrlAndUser(longUrl, user);
-            if(optionalUrl.isPresent()) {
+            if (optionalUrl.isPresent()) {
                 Url url = optionalUrl.get();
-                return new ResponseDto("Created successfully!", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
+                return new ResponseDto("URL already exists!", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl(), url.getQrCode()));
             } else {
                 Url url = convertToUrlEntity(name, user, longUrl, shortUrl, customUrl);
+                url.setQrCode(qrCodeBase64);
                 urlRepository.save(url);
-                return new ResponseDto("Created successfully!", getUserUrlList(request));
+
+                return new ResponseDto("Created successfully!", true);
             }
         } catch (Exception e) {
             return new ResponseDto(e.getMessage(), false);
         }
     }
+
 
     @Override
     public ResponseDto updateUrl(UrlUpdateRequest urlUpdateRequest, HttpServletRequest request) {
@@ -154,6 +165,27 @@ public class UrlServiceImpl implements UrlService {
             return userOptional.get();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String generateQRCodeBase64(String url) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(url, BarcodeFormat.QR_CODE, 300, 300);
+            BufferedImage bufferedImage = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+
+            for (int x = 0; x < 300; x++) {
+                for (int y = 0; y < 300; y++) {
+                    bufferedImage.setRGB(x, y, (bitMatrix.get(x, y)) ? 0x000000 : 0xFFFFFF);
+                }
+            }
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "PNG", byteArrayOutputStream);
+
+            return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating QR code", e);
         }
     }
 }
