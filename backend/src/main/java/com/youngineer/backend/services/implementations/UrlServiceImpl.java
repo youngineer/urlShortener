@@ -1,7 +1,8 @@
 package com.youngineer.backend.services.implementations;
 
+import com.sun.jdi.request.DuplicateRequestException;
+import com.sun.jdi.request.InvalidRequestStateException;
 import com.youngineer.backend.dto.ResponseDto;
-import com.youngineer.backend.dto.urlDto.UrlDeleteRequest;
 import com.youngineer.backend.dto.urlDto.UrlResponseDto;
 import com.youngineer.backend.dto.urlDto.UrlShortenRequest;
 import com.youngineer.backend.dto.urlDto.UrlUpdateRequest;
@@ -15,10 +16,12 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.CRC32;
 
 
 @Service
@@ -36,8 +39,8 @@ public class UrlServiceImpl implements UrlService {
     public ResponseDto getUserUrlList(HttpServletRequest request) {
         try {
             User user = getUser(request);
-            List<Url> urlList = urlRepository.findAllByUserOrderByCreatedAtDesc(user);
-            if(urlList.isEmpty()) return new ResponseDto("OK", "Create an url");
+            List<Url> urlList = urlRepository.findAllByUserOrderByCreatedAtAsc(user);
+            if(urlList.isEmpty()) return new ResponseDto("OK", null);
 
             List<UrlResponseDto> urlResponseDtoList = new ArrayList<>();
             for(Url url: urlList) {
@@ -45,32 +48,36 @@ public class UrlServiceImpl implements UrlService {
                 urlResponseDtoList.add(urlResponseDto);
             }
 
-            return new ResponseDto("OK", urlResponseDtoList);
+            return new ResponseDto("Data fetched successfully!", urlResponseDtoList);
         } catch (Exception e) {
-            return new ResponseDto(e.getMessage(), null);
+            return new ResponseDto(e.getMessage(), false);
         }
     }
 
     @Override
     public ResponseDto shortenUrl(UrlShortenRequest urlShortenRequest, HttpServletRequest request){
+        System.out.println(urlShortenRequest.toString());
         try {
             User user = getUser(request);
             String longUrl = urlShortenRequest.longUrl();
-            String name = urlShortenRequest.name().isEmpty() ? longUrl : urlShortenRequest.name();
+            String name = urlShortenRequest.name();
             String shortUrl = SHORT_BASE_URL + getCrc32(longUrl);
-            String customUrl = urlShortenRequest.customUrl().isEmpty() ? shortUrl : urlShortenRequest.customUrl();
+            while(urlRepository.existsByShortUrl(shortUrl) || urlRepository.existsByCustomUrl(shortUrl)) {
+                shortUrl += getCrc32(longUrl);
+            }
+            String customUrl = urlShortenRequest.customUrl();
 
             Optional<Url> optionalUrl = urlRepository.findByLongUrlAndUser(longUrl, user);
             if(optionalUrl.isPresent()) {
                 Url url = optionalUrl.get();
-                return new ResponseDto("OK", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
+                return new ResponseDto("Created successfully!", new UrlResponseDto(url.getId(), url.getName(), url.getLongUrl(), url.getShortUrl(), url.getCustomUrl()));
             } else {
                 Url url = convertToUrlEntity(name, user, longUrl, shortUrl, customUrl);
                 urlRepository.save(url);
-                return new ResponseDto("OK", getUserUrlList(request));
+                return new ResponseDto("Created successfully!", getUserUrlList(request));
             }
         } catch (Exception e) {
-            return new ResponseDto(e.getMessage(), null);
+            return new ResponseDto(e.getMessage(), false);
         }
     }
 
@@ -87,27 +94,31 @@ public class UrlServiceImpl implements UrlService {
             String name = urlUpdateRequest.name().isEmpty() ? prevStoredUrl.getName() : urlUpdateRequest.name();
             String customUrl = urlUpdateRequest.customUrl().isEmpty() ? prevStoredUrl.getCustomUrl() : urlUpdateRequest.customUrl();
 
+            if(!customUrl.isEmpty() && (urlRepository.existsByCustomUrl(customUrl) || urlRepository.existsByShortUrl(customUrl))) {
+                throw new DuplicateRequestException("This custom name is taken.");
+            }
             Url updatedUrl = convertToUrlEntity(name, user, longUrl, shortUrl, customUrl);
             updatedUrl.setId(prevStoredUrl.getId());
             urlRepository.save(updatedUrl);
 
-            return getUserUrlList(request);
+            return new ResponseDto("Updated successfully!", true);
 
         } catch (Exception e) {
-            return new ResponseDto(e.getMessage(), null);
+            return new ResponseDto(e.getMessage(), false);
         }
     }
 
     @Override
-    public ResponseDto deleteUrl(UrlDeleteRequest urlDeleteRequest, HttpServletRequest request) {
-        System.out.println(urlDeleteRequest.id());
+    public ResponseDto deleteUrl(Long id, HttpServletRequest request) {
+        System.out.println(id);
         try {
             User user = getUser(request);
-            urlRepository.deleteById(urlDeleteRequest.id());
+            if(!urlRepository.existsByIdAndUser(id, user)) throw new InvalidRequestStateException("Unauthorized request");
+            urlRepository.deleteById(id);
 
-            return getUserUrlList(request);
+            return new ResponseDto("Deleted successfully!", true);
         } catch (Exception e) {
-            return new ResponseDto(e.getMessage(), null);
+            return new ResponseDto(e.getMessage(), false);
         }
     }
 
@@ -127,22 +138,11 @@ public class UrlServiceImpl implements UrlService {
     }
 
     private String getCrc32(String url) {
-        int crc  = 0xFFFFFFFF;
-        int poly = 0xEDB88320;
-        byte[] bytes = url.getBytes();
+        byte[] bytes = url.getBytes(StandardCharsets.UTF_8);
+        CRC32 crc32 = new CRC32();
+        crc32.update(bytes, 0, bytes.length);
 
-        for (byte b : bytes) {
-            int temp = (crc ^ b) & 0xff;
-
-            for (int i = 0; i < 8; i++) {
-                if ((temp & 1) == 1) temp = (temp >>> 1) ^ poly;
-                else                 temp = (temp >>> 1);
-            }
-            crc = (crc >>> 8) ^ temp;
-        }
-        crc = ~crc;
-
-        return Integer.toHexString(crc);
+        return Long.toHexString(crc32.getValue());
     }
 
     private User getUser(HttpServletRequest request) {

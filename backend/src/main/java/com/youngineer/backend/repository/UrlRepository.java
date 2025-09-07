@@ -11,12 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
-    List<Url> findAllByUserOrderByCreatedAtDesc(User user);
+    List<Url> findAllByUserOrderByCreatedAtAsc(User user);
     List<Url> findAllByUser(User user, Pageable pageable);
     Optional<Url> findByCustomUrl(String customUrl);
     Optional<Url> findByShortUrl(String shortUrl);
     Optional<Url> findByLongUrlAndUser(String longUrl, User user);
     boolean existsByCustomUrl(String customUrl);
     boolean existsByShortUrl(String shortUrl);
+    boolean existsByIdAndUser(Long id, User user);
     void deleteById(Long id);
 }
