@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { IUrl, IUrlEntry, IUrlMap } from '../utils/types';
-import { deleteUrl, getUrlList, updateUrl } from '../services/urlServices';
+import { deleteUrl, getUrlList, updateUrl, addUrl } from '../services/urlServices';
 import EditUrl from './EditUrl';
 
 
@@ -27,6 +27,15 @@ export default function Table() {
         console.error(error);
       }
     }
+
+    const handleAdd = async(url: IUrlEntry): Promise<void> => {
+      try {
+        const reload = await addUrl(url);
+        if(reload) window.location.reload();
+      } catch (error) {
+        console.error(error);
+      }
+    }
     
       React.useEffect(() => {
         async function getUserUrlList(): Promise<void> {
@@ -46,6 +55,26 @@ export default function Table() {
 
   return(
         <div>
+          {/* Create New URL Button */}
+          <div className="mb-4 right-0">
+            <button className="btn btn-outline btn-secondary" onClick={()=>(document.getElementById('modal_new') as HTMLDialogElement)?.showModal()}>
+              Create New URL
+            </button>
+            <dialog id="modal_new" className="modal">
+              <div className="modal-box">
+                <EditUrl 
+                  id={0} 
+                  url={{name: '', shortUrl: '', longUrl: '', customUrl: ''}} 
+                  isEdit={false} 
+                  onSave={(_id, url) => handleAdd(url)} 
+                />
+              </div>
+              <form method="dialog" className="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="table table-zebra max-w-4xl">
               {/* render header once */}
@@ -53,9 +82,9 @@ export default function Table() {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Short URL</th>
                   <th>Long URL</th>
-                  <th>Custom URL</th>
+                  <th>Short URL</th>
+                  <th>Your Custom URL</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
@@ -66,12 +95,12 @@ export default function Table() {
                     <tr key={id}>
                       <th>{index + 1}</th>
                       <td>{url.name}</td>
-                      <td><a href={url.shortUrl} className="link" target="_blank" rel="noopener noreferrer">{url.shortUrl}</a></td>
                       <td><a href={url.longUrl} className="link" target="_blank" rel="noopener noreferrer">{url.longUrl}</a></td>
+                      <td><a href={url.shortUrl} className="link" target="_blank" rel="noopener noreferrer">{url.shortUrl}</a></td>
                       <td><a href={url.customUrl} className="link" target="_blank" rel="noopener noreferrer">{url.customUrl}</a></td>
                       <td>
                         {/* Open the modal using document.getElementById('ID').showModal() method */}
-                          <button className="btn" onClick={()=>(document.getElementById(`modal_${id}`) as HTMLDialogElement)?.showModal()}>Edit</button>
+                          <button className="btn btn-warning" onClick={()=>(document.getElementById(`modal_${id}`) as HTMLDialogElement)?.showModal()}>Edit</button>
                           <dialog id={`modal_${id}`} className="modal">
                             <div className="modal-box">
                               <EditUrl id={id} url={url} isEdit={true} onSave={handleUpdate} />

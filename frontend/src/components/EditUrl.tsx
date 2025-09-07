@@ -2,9 +2,10 @@ import React, { useState, type ChangeEvent, type FormEvent } from 'react'
 import type { IEditUrl, IUrl, IUrlEntry } from '../utils/types'
 import { useNavigate } from 'react-router-dom';
 import { addUrl, updateUrl } from '../services/urlServices';
+import type { JSX } from '@emotion/react/jsx-runtime';
 
 
-const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }) => {
+const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }): JSX.Element => {
     const navigate = useNavigate();
 
     const [urlUpdateForm, setUrlUpdateForm] = useState<IUrl>({
@@ -31,7 +32,7 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }) => {
               name: urlUpdateForm.name,
               shortUrl: urlUpdateForm.shortUrl,
               longUrl: urlUpdateForm.longUrl,
-              customUrl: urlUpdateForm.customUrl
+              customUrl: urlUpdateForm.customUrl === "" ? "": "https://kr.pt/" + urlUpdateForm.customUrl
             };
             await onSave(id, urlEntry);
           } else {
@@ -45,38 +46,85 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }) => {
 
 
   return (
-    <form onSubmit={handleFormSubmit}>
-        <label className="label m-2">Url-Name</label>
-        <input type="text" name="name" className="input validator" required placeholder="Username" value={urlUpdateForm.name} onChange={handleInputChange}
-            pattern="[A-Za-z][A-Za-z0-9\-]*" minLength={3} maxLength={30} title="Only letters, numbers or dash" />
-            <p className="validator-hint">
-            Must be 3 to 30 characters
-            <br/>containing only letters, numbers or dash
-        </p>
+        <form onSubmit={handleFormSubmit} className="max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md space-y-6">
+            {/* Url Name */}
+            <div className="flex flex-col">
+                <label htmlFor="name" className="text-sm font-semibold text-gray-700">Url Name</label>
+                <input 
+                    type="text" 
+                    name="name" 
+                    className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    required 
+                    placeholder="Enter URL Name" 
+                    value={urlUpdateForm.name} 
+                    onChange={handleInputChange}
+                    pattern="[A-Za-z][A-Za-z0-9\s\-]*" 
+                    minLength={3} 
+                    maxLength={30} 
+                    title="Only letters, numbers, or dash"
+                />
+                <p className="mt-1 text-xs text-gray-500">Must be 3 to 30 characters, containing only letters, numbers, or dash</p>
+            </div>
 
-        <label className="label m-2">Original-Url</label>
-        <input 
-            pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+)$"
-            title="Must be valid URL" />
-        <p className="validator-hint">Must be valid URL</p>
+            {/* Original Url */}
+            <div className="flex flex-col">
+                <label htmlFor="longUrl" className="text-sm font-semibold text-gray-700">Original URL</label>
+                <input 
+                    type="url" 
+                    name="longUrl" 
+                    className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    required 
+                    placeholder="Enter Original URL"
+                    pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+)$" 
+                    title="Must be a valid URL" 
+                    onChange={handleInputChange}
+                />
+                <p className="mt-1 text-xs text-gray-500">Must be a valid URL</p>
+            </div>
 
-        <label className="label m-2">Short-Url</label>
-        <input type="text" placeholder={urlUpdateForm.shortUrl} className="input" disabled />
+            {/* Short Url */}
+            <div className="flex flex-col">
+                <label htmlFor="shortUrl" className="text-sm font-semibold text-gray-700">Short URL</label>
+                <input 
+                    type="text" 
+                    name="shortUrl" 
+                    className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    placeholder={urlUpdateForm.shortUrl} 
+                    disabled 
+                />
+            </div>
 
-        <label className="label m-2">Custom-Name</label>
-        <label className="input">
-            <span className="label m-2">https://kr.pt/</span>
-            <input type="text" name="customUrl" className="input validator" required placeholder="custom-name" value={urlUpdateForm.customUrl} onChange={handleInputChange}
-                pattern="[A-Za-z][A-Za-z0-9\-]*" minLength={3} maxLength={16} title="Only letters, numbers or dash" />
-        </label>
-        <p className="validator-hint">
-            Must be 3 to 16 characters
-            <br/>containing only letters, numbers or dash 
-        </p>
+            {/* Custom Url */}
+            <div className="flex flex-col">
+                <label htmlFor="customUrl" className="text-sm font-semibold text-gray-700">Custom URL</label>
+                <div className="flex items-center space-x-2">
+                    <span className="text-gray-500">https://kr.pt/</span>
+                    <input 
+                        type="text" 
+                        name="customUrl" 
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        required 
+                        placeholder="custom-name"
+                        value={urlUpdateForm.customUrl} 
+                        onChange={handleInputChange}
+                        pattern="[A-Za-z][A-Za-z0-9\-]*" 
+                        minLength={8} 
+                        maxLength={16} 
+                        title="Only letters, numbers, or dash"
+                    />
+                </div>
+                <p className="mt-1 text-xs text-gray-500">Must be 8 to 16 characters, containing only letters, numbers, or dash</p>
+            </div>
 
-        <button type="submit" className="btn btn-outline btn-success">Save</button>
-    </form>
-  )
+            {/* Submit Button */}
+            <button 
+                type="submit" 
+                className="w-full py-3 mt-4 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+                Save
+            </button>
+        </form>
+    );
 }
 
 export default EditUrl
