@@ -27,3 +27,10 @@ export interface IUrl {
 
 export type IUrlEntry = Omit<IUrl, 'id'>;
 export type IUrlMap = Map<number, IUrlEntry>;
+
+export interface IEditUrl {
+    id: number;
+    url: IUrlEntry;
+    isEdit: boolean;
+    onSave?: (id: number, url: IUrlEntry) => Promise<void>;
+}

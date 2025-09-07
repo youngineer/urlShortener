@@ -28,7 +28,11 @@ const Navbar = () => {
             try {
                 const response: boolean = await isLoggedIn();
                 setIsAuthenticated(response);
-                if(!response) navigate("/auth");
+                if(!response) {
+                    navigate("/auth");
+                } else {
+                    navigate("/url");
+                }
             } catch (error) {
                 setIsAuthenticated(false);
                 navigate("/auth");
