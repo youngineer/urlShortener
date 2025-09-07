@@ -118,10 +118,15 @@ function processData(urlList: IUrl[]): IUrlMap | null {
 
     const urlMap = new Map<number, IUrlEntry>;
     urlList.forEach(url => {
-        const urlEntry: IUrlEntry = {name: url.name, shortUrl: url.shortUrl, longUrl: url.longUrl, customUrl: url.customUrl};
+        const urlEntry: IUrlEntry = {
+            name: url.name, 
+            shortUrl: url.shortUrl, 
+            longUrl: url.longUrl, 
+            customUrl: url.customUrl,
+            qrCode: url.qrCode
+        };
         urlMap.set(url.id, urlEntry);
     });
-
 
     return urlMap;
 }

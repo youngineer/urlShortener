@@ -82,9 +82,9 @@ export default function Table() {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Long URL</th>
-                  <th>Short URL</th>
-                  <th>Your Custom URL</th>
+                  <th className="w-1/2">Long URL</th>
+                  <th>Short / Custom</th>
+                  <th>QR Code</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
@@ -95,9 +95,38 @@ export default function Table() {
                     <tr key={id}>
                       <th>{index + 1}</th>
                       <td>{url.name}</td>
-                      <td><a href={url.longUrl} className="link" target="_blank" rel="noopener noreferrer">{url.longUrl}</a></td>
-                      <td><a href={url.shortUrl} className="link" target="_blank" rel="noopener noreferrer">{url.shortUrl}</a></td>
-                      <td><a href={url.customUrl} className="link" target="_blank" rel="noopener noreferrer">{url.customUrl}</a></td>
+                      <td className="max-w-2xl break-words">
+                        <a href={url.longUrl} className="link break-words" target="_blank" rel="noopener noreferrer">{url.longUrl}</a>
+                      </td>
+                      <td className="whitespace-nowrap">
+                        <a href={url.shortUrl} className="link" target="_blank" rel="noopener noreferrer">{url.shortUrl}</a>
+                        <button className="btn btn-square ml-2" onClick={() => navigator.clipboard.writeText(url.shortUrl)} aria-label="Copy short URL">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1a1 1 0 0 0-1 1v9.5A1.5 1.5 0 0 0 4.5 13H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
+                            <path d="M2 3a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z"/>
+                          </svg>
+                        </button>
+                        <span className="mx-2 text-gray-400">|</span>
+                        <a href={url.customUrl} className="link" target="_blank" rel="noopener noreferrer">{url.customUrl}</a>
+                        <button className="btn btn-square ml-2" onClick={() => navigator.clipboard.writeText(url.customUrl)} aria-label="Copy custom URL">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1a1 1 0 0 0-1 1v9.5A1.5 1.5 0 0 0 4.5 13H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
+                            <path d="M2 3a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z"/>
+                          </svg>
+                        </button>
+                      </td>
+
+                      <td>
+                        {url.qrCode ? (
+                          <img 
+                            src={`data:image/png;base64,${url.qrCode}`} 
+                            alt="QR Code" 
+                            className="w-2xl h-2xl object-contain"
+                          />
+                        ) : (
+                          <span className="text-gray-400">No QR</span>
+                        )}
+                      </td>
                       <td>
                         {/* Open the modal using document.getElementById('ID').showModal() method */}
                           <button className="btn btn-warning" onClick={()=>(document.getElementById(`modal_${id}`) as HTMLDialogElement)?.showModal()}>Edit</button>

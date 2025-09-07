@@ -9,13 +9,13 @@ const AuthPage: FC = (): JSX.Element => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [signupPayload, setSignupInfo] = useState<ISignup>({
-    emailId: '',
-    password: '',
-    confirmPassword: ''
+    emailId: 'test@gmail.com',
+    password: 'Test@123',
+    confirmPassword: 'Test@123'
   });
   const [loginPayload, setLoginInfo] = useState<ILogin>({
-    emailId: '',
-    password: ''
+    emailId: 'test@gmail.com',
+    password: 'Test@123'
   });
 
   const [alert, setAlert] = useState<IAlertInfo | null>(null);
@@ -76,7 +76,7 @@ const AuthPage: FC = (): JSX.Element => {
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
             </g>
           </svg>
-          <input name="emailId" type="email" placeholder="emailId" required onChange={handleFormDataChange} value={isLogin ? loginPayload.emailId : signupPayload.emailId} />
+          <input name="emailId" type="email" placeholder="suresh.nambiar@gmail.com" required onChange={handleFormDataChange} value={isLogin ? loginPayload.emailId : signupPayload.emailId} />
         </label>
         <div className="validator-hint hidden">Enter valid email address</div>
 
@@ -100,10 +100,10 @@ const AuthPage: FC = (): JSX.Element => {
           name="password"
           type="password"
           required
-          placeholder="Password"
-          minLength={8}
+          placeholder="********"
+          minLength={6}
           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-          title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+          title="Must be more than 6 characters, including number, lowercase letter, uppercase letter"
           onChange={handleFormDataChange}
           value={isLogin ? loginPayload.password : signupPayload.password}
         />

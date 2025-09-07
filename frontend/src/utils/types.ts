@@ -23,6 +23,7 @@ export interface IUrl {
     shortUrl: string;
     longUrl: string;
     customUrl: string;
+    qrCode?: String
 }
 
 export type IUrlEntry = Omit<IUrl, 'id'>;
