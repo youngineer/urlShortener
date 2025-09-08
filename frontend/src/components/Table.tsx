@@ -99,45 +99,66 @@ export default function Table() {
                         <a href={url.longUrl} className="link break-words" target="_blank" rel="noopener noreferrer">{url.longUrl}</a>
                       </td>
                       <td className="whitespace-nowrap">
-                        <a href={url.shortUrl} className="link" target="_blank" rel="noopener noreferrer">{url.shortUrl}</a>
-                        <button className="btn btn-square ml-2" onClick={() => navigator.clipboard.writeText(url.shortUrl)} aria-label="Copy short URL">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M4 1a1 1 0 0 0-1 1v9.5A1.5 1.5 0 0 0 4.5 13H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
-                            <path d="M2 3a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z"/>
-                          </svg>
-                        </button>
-                        <span className="mx-2 text-gray-400">|</span>
-                        <a href={url.customUrl} className="link" target="_blank" rel="noopener noreferrer">{url.customUrl}</a>
-                        <button className="btn btn-square ml-2" onClick={() => navigator.clipboard.writeText(url.customUrl)} aria-label="Copy custom URL">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M4 1a1 1 0 0 0-1 1v9.5A1.5 1.5 0 0 0 4.5 13H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
-                            <path d="M2 3a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z"/>
-                          </svg>
-                        </button>
+                        <div className="flex flex-col space-y-1">
+                          <div className="flex items-center">
+                            <span className="text-sm text-gray-500 mr-2">Short:</span>
+                            <a href={url.shortUrl} className="link text-sm" target="_blank" rel="noopener noreferrer">{url.shortUrl}</a>
+                            <button className="btn btn-xs btn-ghost ml-1" onClick={() => navigator.clipboard.writeText(url.shortUrl)} aria-label="Copy short URL">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                              </svg>
+                            </button>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-sm text-gray-500 mr-2">Custom:</span>
+                            <a href={url.customUrl} className="link text-sm" target="_blank" rel="noopener noreferrer">{url.customUrl}</a>
+                            <button className="btn btn-xs btn-ghost ml-1" onClick={() => navigator.clipboard.writeText(url.customUrl)} aria-label="Copy custom URL">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                <path d="M4 16c-1.1 0-2-.9-2 2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
                       </td>
-
                       <td>
                         {url.qrCode ? (
-                          <img 
-                            src={`data:image/png;base64,${url.qrCode}`} 
-                            alt="QR Code" 
-                            className="w-2xl h-2xl object-contain"
-                          />
+                          <div className="relative group cursor-pointer inline-block tooltip tooltip-info" data-tip="Download QR Code"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = `data:image/png;base64,${url.qrCode}`;
+                                link.download = `qr-code-${url.name || 'url'}.png`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }}>
+                            <img
+                              src={`data:image/png;base64,${url.qrCode}`}
+                              alt="QR Code"
+                              className="w-16 h-16 object-contain transition-opacity group-hover:opacity-75"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-20 rounded">
+                              <svg className="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path fillRule="evenodd" d="M13 11.15V4a1 1 0 1 0-2 0v7.15L8.78 8.374a1 1 0 1 0-1.56 1.25l4 5a1 1 0 0 0 1.56 0l4-5a1 1 0 1 0-1.56-1.25L13 11.15Z" clipRule="evenodd"/>
+                                <path fillRule="evenodd" d="M9.657 15.874 7.358 13H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.358l-2.3 2.874a3 3 0 0 1-4.685 0ZM17 16a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z" clipRule="evenodd"/>
+                              </svg>
+                            </div>
+                          </div>
                         ) : (
                           <span className="text-gray-400">No QR</span>
                         )}
                       </td>
                       <td>
-                        {/* Open the modal using document.getElementById('ID').showModal() method */}
-                          <button className="btn btn-warning" onClick={()=>(document.getElementById(`modal_${id}`) as HTMLDialogElement)?.showModal()}>Edit</button>
-                          <dialog id={`modal_${id}`} className="modal">
-                            <div className="modal-box">
-                              <EditUrl id={id} url={url} isEdit={true} onSave={handleUpdate} />
-                            </div>
-                            <form method="dialog" className="modal-backdrop">
-                              <button>close</button>
-                            </form>
-                          </dialog>
+                        <button className="btn btn-warning" onClick={()=>(document.getElementById(`modal_${id}`) as HTMLDialogElement)?.showModal()}>Edit</button>
+                        <dialog id={`modal_${id}`} className="modal">
+                          <div className="modal-box">
+                            <EditUrl id={id} url={url} isEdit={true} onSave={handleUpdate} />
+                          </div>
+                          <form method="dialog" className="modal-backdrop">
+                            <button>close</button>
+                          </form>
+                        </dialog>
                       </td>
                       <td>
                         <button className="btn btn-soft btn-error" onClick={() => handleDelete(id)}>Delete</button>
