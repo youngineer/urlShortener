@@ -30,7 +30,7 @@ import java.util.zip.CRC32;
 
 @Service
 public class UrlServiceImpl implements UrlService {
-    private static final String SHORT_BASE_URL = "https://kr.pt/";
+    private static final String SHORT_BASE_URL = "kr.pt/";
     private final UrlRepository urlRepository;
     private final UserRepository userRepository;
 

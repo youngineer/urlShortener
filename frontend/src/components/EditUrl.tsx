@@ -32,7 +32,7 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }): JSX.Element =
               name: urlUpdateForm.name,
               shortUrl: urlUpdateForm.shortUrl,
               longUrl: urlUpdateForm.longUrl,
-              customUrl: urlUpdateForm.customUrl === "" ? "": "https://kr.pt/" + urlUpdateForm.customUrl
+              customUrl: urlUpdateForm.customUrl === "" ? "": "kr.pt/" + urlUpdateForm.customUrl
             };
             await onSave(id, urlEntry);
           } else {
@@ -104,7 +104,7 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }): JSX.Element =
             <div className="flex flex-col">
                 <label htmlFor="customUrl" className="text-sm font-semibold text-gray-700">Custom URL</label>
                 <div className="flex items-center space-x-2">
-                    <span className="text-gray-500">https://kr.pt/</span>
+                    <span className="text-gray-500">kr.pt/</span>
                     <input 
                         type="text" 
                         name="customUrl" 
