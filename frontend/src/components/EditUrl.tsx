@@ -111,7 +111,7 @@ const EditUrl: React.FC<IEditUrl> = ({ id, url, isEdit, onSave }): JSX.Element =
                         className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                         required 
                         placeholder="custom-name"
-                        value={urlUpdateForm.customUrl} 
+                        value={urlUpdateForm.customUrl.substring(urlUpdateForm.customUrl.indexOf('/') + 1)} 
                         onChange={handleInputChange}
                         pattern="[A-Za-z][A-Za-z0-9\-]*" 
                         minLength={8} 
