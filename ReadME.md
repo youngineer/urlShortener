@@ -70,12 +70,6 @@ A full-stack URL shortener application built with React/TypeScript frontend and 
 - **[`backend/src/main/java/.../authentication/`](backend/src/main/java/com/youngineer/backend/authentication/)** - JWT filters, security configuration, and CORS setup
 - **[`backend/src/main/java/.../dto/`](backend/src/main/java/com/youngineer/backend/dto/)** - Data transfer objects for API requests and responses
 
-## Getting Started
-
-1. **Backend Setup**: Navigate to [`backend/`](backend/) and follow the setup instructions
-2. **Frontend Setup**: Navigate to [`frontend/`](frontend/) and follow the setup instructions
-3. **Database**: Run the SQL script in [`backend/create.sql`](backend/create.sql) to set up your database schema
-
 ## Features
 
 - User authentication with JWT tokens
