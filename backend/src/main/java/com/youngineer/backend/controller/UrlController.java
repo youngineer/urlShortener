@@ -40,7 +40,6 @@ public class UrlController {
 
     @PatchMapping("/updateUrl")
     public ResponseEntity<ResponseDto> updateUrl(@RequestBody UrlUpdateRequest urlUpdateRequest, HttpServletRequest request) {
-        System.out.println("Update request");
         try {
             return ResponseEntity.ok(urlService.updateUrl(urlUpdateRequest, request));
         } catch (Exception e) {
@@ -50,8 +49,6 @@ public class UrlController {
 
     @DeleteMapping("/deleteUrl")
     public ResponseEntity<ResponseDto> deleteUrl(@RequestBody Long id, HttpServletRequest request) {
-        System.out.println(id);
-        System.out.println(id.getClass());
         try {
             return ResponseEntity.ok(urlService.deleteUrl(id, request));
         } catch (Exception e) {
