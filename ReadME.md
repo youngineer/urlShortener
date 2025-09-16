@@ -1,6 +1,5 @@
 # linkShrink - URL Shortener
 [![Watch the demo](assets/demo-thumb.png)](https://drive.google.com/file/d/1zr8X2ZkppLJzL7GAnM-yWg8A92UEeHAd/view?usp=sharing)
-### CLick to watch the demo video
 
 A full-stack URL shortener application built with React/TypeScript frontend and Spring Boot backend. Features JWT authentication, QR code generation, and a clean DaisyUI interface.
 
